@@ -7,43 +7,38 @@ import java.util.List;
 public class Employee {
 
 	private String employeeId;
-	private String firstName;
-	private String lastName;
-	private String idNumber;
-	private String address;
-	
-	private int yearJoined;
-	private int monthJoined;
-	private int dayJoined;
-	private int monthWorkingInYear;
-	
-	private boolean isForeigner;
-	private boolean gender; //true = Laki-laki, false = Perempuan
-	
+    private String firstName;
+    private String lastName;
+    private String idNumber;
+    private String address;
+    private int yearJoined;
+    private int monthJoined;
+    private int dayJoined;
+    private boolean isForeigner;
+    private boolean gender;
+    private int monthlySalary;
+    private int otherMonthlyIncome;
+    private int annualDeductible;
 	private MonthlyIncome monthlyIncome;
-	private int annualDeductible;
-	
-	private String spouseName;
-	private String spouseIdNumber;
+    private String spouseName;
+    private String spouseIdNumber;
+    private List<String> childNames;
+    private List<String> childIdNumbers;
 
-	private List<String> childNames;
-	private List<String> childIdNumbers;
-	
-	public Employee(String employeeId, String firstName, String lastName, String idNumber, String address, int yearJoined, int monthJoined, int dayJoined, boolean isForeigner, boolean gender) {
-		this.employeeId = employeeId;
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.idNumber = idNumber;
-		this.address = address;
-		this.yearJoined = yearJoined;
-		this.monthJoined = monthJoined;
-		this.dayJoined = dayJoined;
-		this.isForeigner = isForeigner;
-		this.gender = gender;
-		
-		childNames = new LinkedList<String>();
-		childIdNumbers = new LinkedList<String>();
-	}
+    public Employee(EmployeeData data) {
+        this.employeeId = data.getEmployeeId();
+        this.firstName = data.getFirstName();
+        this.lastName = data.getLastName();
+        this.idNumber = data.getIdNumber();
+        this.address = data.getAddress();
+        this.yearJoined = data.getYearJoined();
+        this.monthJoined = data.getMonthJoined();
+        this.dayJoined = data.getDayJoined();
+        this.isForeigner = data.isForeigner();
+        this.gender = data.isGender();
+        this.childNames = new LinkedList<String>();
+        this.childIdNumbers = new LinkedList<String>();
+    }
 	
 	/**
 	 * Fungsi untuk menentukan gaji bulanan pegawai berdasarkan grade kepegawaiannya (grade 1: 3.000.000 per bulan, grade 2: 5.000.000 per bulan, grade 3: 7.000.000 per bulan)
@@ -80,6 +75,7 @@ public class Employee {
 	
 	public int getAnnualIncomeTax() {
 		LocalDate date = LocalDate.now();
+		int monthWorkingInYear;
 		if (date.getYear() == yearJoined) {
 			monthWorkingInYear = date.getMonthValue() - monthJoined;
 		} else {
