@@ -1,9 +1,8 @@
 package lib;
-
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.LinkedList;
 import java.util.List;
+
 
 public class Employee {
 
@@ -21,8 +20,7 @@ public class Employee {
 	private boolean isForeigner;
 	private boolean gender; //true = Laki-laki, false = Perempuan
 	
-	private int monthlySalary;
-	private int otherMonthlyIncome;
+	private MonthlyIncome monthlyIncome;
 	private int annualDeductible;
 	
 	private String spouseName;
@@ -54,20 +52,11 @@ public class Employee {
 	
 	public void setMonthlySalary(int grade) {	
 		if (grade == 1) {
-			monthlySalary = 3000000;
-			if (isForeigner) {
-				monthlySalary = (int) (3000000 * 1.5);
-			}
-		}else if (grade == 2) {
-			monthlySalary = 5000000;
-			if (isForeigner) {
-				monthlySalary = (int) (3000000 * 1.5);
-			}
-		}else if (grade == 3) {
-			monthlySalary = 7000000;
-			if (isForeigner) {
-				monthlySalary = (int) (3000000 * 1.5);
-			}
+			monthlyIncome = new MonthlyIncome(3000000, isForeigner);
+		} else if (grade == 2) {
+			monthlyIncome = new MonthlyIncome(5000000, isForeigner);
+		} else if (grade == 3) {
+			monthlyIncome = new MonthlyIncome(7000000, isForeigner);
 		}
 	}
 	
@@ -76,7 +65,7 @@ public class Employee {
 	}
 	
 	public void setAdditionalIncome(int income) {	
-		this.otherMonthlyIncome = income;
+		monthlyIncome.setOtherIncome(income);
 	}
 	
 	public void setSpouse(String spouseName, String spouseIdNumber) {
@@ -90,16 +79,32 @@ public class Employee {
 	}
 	
 	public int getAnnualIncomeTax() {
-		
-		//Menghitung berapa lama pegawai bekerja dalam setahun ini, jika pegawai sudah bekerja dari tahun sebelumnya maka otomatis dianggap 12 bulan.
 		LocalDate date = LocalDate.now();
-		
 		if (date.getYear() == yearJoined) {
 			monthWorkingInYear = date.getMonthValue() - monthJoined;
-		}else {
+		} else {
 			monthWorkingInYear = 12;
 		}
-		
-		return TaxFunction.calculateTax(monthlySalary, otherMonthlyIncome, monthWorkingInYear, annualDeductible, spouseIdNumber.equals(""), childIdNumbers.size());
+		return TaxFunction.calculateTax(monthlyIncome.getTotal(), monthlyIncome.getOtherIncome(), monthWorkingInYear, annualDeductible, spouseIdNumber.equals(""), childIdNumbers.size());
+	}
+}
+
+class MonthlyIncome {
+    private int salary;
+    private int otherIncome;
+
+    public MonthlyIncome(int salary, boolean isForeigner) {
+        this.salary = isForeigner ? (int) (salary * 1.5) : salary;
+    }
+
+    public void setOtherIncome(int otherIncome) {
+        this.otherIncome = otherIncome;
+    }
+
+    public int getTotal() {
+        return salary + otherIncome;
+    }
+	public int getOtherIncome() {
+		return otherIncome;
 	}
 }
