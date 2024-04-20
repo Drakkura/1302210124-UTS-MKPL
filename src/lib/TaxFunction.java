@@ -14,31 +14,40 @@ public class TaxFunction {
 	 * 
 	 */
 	
-	
-	public static int calculateTax(int monthlySalary, int otherMonthlyIncome, int numberOfMonthWorking, int deductible, boolean isMarried, int numberOfChildren) {
-		
-		int tax = 0;
-		
-		if (numberOfMonthWorking > 12) {
-			System.err.println("More than 12 month working per year");
-		}
-		
-		if (numberOfChildren > 3) {
-			numberOfChildren = 3;
-		}
-		
-		if (isMarried) {
-			tax = (int) Math.round(0.05 * (((monthlySalary + otherMonthlyIncome) * numberOfMonthWorking) - deductible - (54000000 + 4500000 + (numberOfChildren * 1500000))));
-		}else {
-			tax = (int) Math.round(0.05 * (((monthlySalary + otherMonthlyIncome) * numberOfMonthWorking) - deductible - 54000000));
-		}
-		
-		if (tax < 0) {
-			return 0;
-		}else {
-			return tax;
-		}
-			 
-	}
+	 public static int calculateTax(int monthlySalary, int otherMonthlyIncome, int numberOfMonthWorking, int deductible, boolean isMarried, int numberOfChildren) {
+        validateNumberOfMonths(numberOfMonthWorking);
+        int taxableIncome = calculateTaxableIncome(monthlySalary, otherMonthlyIncome, numberOfMonthWorking, deductible, isMarried, numberOfChildren);
+        return calculateTaxFromTaxableIncome(taxableIncome);
+    }
+
+    private static void validateNumberOfMonths(int numberOfMonthWorking) {
+        if (numberOfMonthWorking > 12) {
+            System.err.println("More than 12 month working per year");
+        }
+    }
+
+    private static int calculateTaxableIncome(int monthlySalary, int otherMonthlyIncome, int numberOfMonthWorking, int deductible, boolean isMarried, int numberOfChildren) {
+        int totalIncome = (monthlySalary + otherMonthlyIncome) * numberOfMonthWorking;
+        int taxFreeIncome = calculateTaxFreeIncome(isMarried, numberOfChildren);
+        int taxableIncome = totalIncome - deductible - taxFreeIncome;
+
+        return Math.max(taxableIncome, 0);
+    }
+
+    private static int calculateTaxFromTaxableIncome(int taxableIncome) {
+        return (int) Math.round(0.05 * taxableIncome);
+    }
+
+    private static int calculateTaxFreeIncome(boolean isMarried, int numberOfChildren) {
+        int taxFreeIncome = 54000000;
+
+        if (isMarried) {
+            taxFreeIncome += 4500000;
+        }
+
+        taxFreeIncome += Math.min(numberOfChildren, 3) * 1500000;
+
+        return taxFreeIncome;
+    }
 	
 }
